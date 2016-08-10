@@ -1,0 +1,42 @@
+<project name="treinamento" default="empacotar">
+
+	<!-- ================================= 
+          target: limpar              
+         ================================= -->
+	<target name="limpar" description="limpa os diretorios">
+		
+		<delete dir="build" />
+
+		<mkdir dir="build" />
+
+	</target>
+
+
+	<!-- ================================= 
+          target: compilar              
+         ================================= -->
+	<target name="compilar" depends="limpar" description="compila os arquivos">
+		<javac srcdir="src" destdir="build">
+
+			<!-- adiciona dependencias -->
+			<classpath>
+
+				<fileset dir="lib">
+					<include name="*.jar" />
+				</fileset>
+
+			</classpath>
+
+		</javac>
+	</target>
+
+	<!-- ================================= 
+          target: empacotar              
+         ================================= -->
+	<target name="empacotar" depends="compilar">
+
+		<jar destfile="build/treinamento.jar" basedir="build" />
+
+	</target>
+
+</project>
