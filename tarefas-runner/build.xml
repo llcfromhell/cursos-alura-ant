@@ -1,0 +1,15 @@
+<project name="tarefas-runner">
+
+	<path id="tarefas.classpath">
+		<pathelement location="lib/tarefas.jar" />
+	</path>
+
+	<taskdef name="log" classname="io.github.llcfromhell.LogTask" classpathref="tarefas.classpath">
+	</taskdef>
+
+	<target name="run-log-task">
+		<log msg="qualé velinho">
+		</log>
+	</target>
+
+</project>

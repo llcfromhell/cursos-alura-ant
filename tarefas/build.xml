@@ -1,0 +1,29 @@
+<project name="tarefas" default="compile">
+
+	<target name="init">
+		<delete dir="build"></delete>
+		<mkdir dir="build"/>
+		<mkdir dir="build/classes"/>
+	
+	</target>
+	
+	<target name="compile" depends="init">
+
+		<javac srcdir="src" destdir="build/classes" debug="true">
+		
+			<classpath>
+				<fileset dir="lib">
+					<include name="*.jar"/>
+				</fileset>
+			</classpath>
+			
+		</javac>
+
+	</target>
+	
+	<target name="jar" depends="compile">
+		<jar destfile="build/tarefas.jar" basedir="build/classes"></jar>
+	</target>
+
+</project>
+
