@@ -1,47 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="agenda" default="compilar">
 
+	<property file="build.properties" />
+
 	<target name="limpar">
-		<delete dir="build" />
-		<mkdir dir="build" />
-		<mkdir dir="build/classes" />
-		<mkdir dir="build/classes-teste" />
-		<mkdir dir="build/relatorio-teste" />
+		<delete dir="${build.dir}" />
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.dir}/${classes.dir}" />
+		<mkdir dir="${build.dir}/${classes-teste.dir}" />
+		<mkdir dir="${build.dir}/${relatorio-teste.dir}" />
 	</target>
 
+	<!-- Dependências build -->
+	<path id="compilar.classpath">
+		<fileset dir="WebContent/WEB-INF/lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<!-- dependências build teste -->
+	<path id="compilar-teste.classpath">
+		<path refid="compilar.classpath" />
+
+		<fileset dir="lib-teste">
+			<include name="*.jar" />
+		</fileset>
+
+		<pathelement path="build/classes" />
+	</path>
+
+	<!-- dependências run teste -->
+	<path id="executar-teste.classpath">
+		<path refid="compilar-teste.classpath" />
+
+		<pathelement path="build/classes-teste" />
+	</path>
+
+	<!-- compilar -->
 	<target name="compilar" depends="limpar">
-		<javac destdir="build/classes" srcdir="src">
-			<classpath>
-				<fileset dir="WebContent/WEB-INF/lib">
-					<include name="*.jar" />
-				</fileset>
-			</classpath>
+		<javac destdir="build/classes" srcdir="src" debug="true">
+			<classpath refid="compilar.classpath" />
 		</javac>
 	</target>
 
+	<!-- compilar teste -->
 	<target name="compilar-teste" depends="compilar">
 
 		<javac destdir="build/classes-teste" srcdir="src-teste">
-			
-			<classpath>
 
-				<!-- src compilado -->
-				<pathelement path="build/classes" />
-
-				<fileset dir="WebContent/WEB-INF/lib">
-					<include name="*.jar" />
-				</fileset>
-
-				<!-- libs do junit -->
-				<fileset dir="lib-teste">
-					<include name="*.jar" />
-				</fileset>
-
-			</classpath>
+			<classpath refid="compilar-teste.classpath" />
 		</javac>
 
 	</target>
 
+	<!-- executar teste -->
 	<target name="executar-teste" depends="compilar-teste">
 
 		<junit haltonfailure="yes" showoutput="true" printsummary="on">
@@ -58,22 +70,40 @@
 			</batchtest>
 
 			<!-- dependências -->
-			<classpath>
-				<pathelement location="build/classes" />
-				<pathelement location="build/classes-teste" />
-
-				<fileset dir="WebContent/WEB-INF/lib">
-					<include name="*.jar" />
-				</fileset>
-
-				<fileset dir="lib-teste">
-					<include name="*.jar" />
-				</fileset>
-			</classpath>
+			<classpath refid="executar-teste.classpath" />
 
 		</junit>
 
+	</target>
 
+	<!-- empacotar -->
+	<target name="empacotar">
+		<war destfile="${build.dir}/agenda.war" webxml="WebContent/WEB-INF/web.xml">
+			<fileset dir="WebContent" />
+			<classes dir="${build.dir}/${classes.dir}" />
+		</war>
+	</target>
+
+	<!-- clean local -->
+	<target name="clean-local" depends="empacotar">
+		<delete dir="${tomcat.dir}\\webapps\\agenda" />
+		<delete file="${tomcat.dir}\\webapps\\agenda.war" />
+	</target>
+
+
+	<!-- deploy local -->
+	<target name="deploy-local" depends="clean-local">
+		<copy file="${build.dir}\\agenda.war" todir="${tomcat.dir}\\webapps" />
+	</target>
+
+	<!-- rodar tomcar local -->
+	<target name="rodar-tomcat-local">
+		<exec executable="${tomcat.dir}\\bin\\startup.bat" />
+	</target>
+
+	<!-- para tomcar local -->
+	<target name="parar-tomcat-local">
+		<exec executable="${tomcat.dir}\\bin\\shutdown.bat" />
 	</target>
 
 </project>
